@@ -1,0 +1,48 @@
+// This allows ./gradlew flywayMigrate and other tasks works without the error "No database found to handle jdbc:mysql://127.0.0.1:3306/migrations"
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.flywaydb:flyway-mysql:10.10.0"
+	}
+}
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.4'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id "org.flywaydb.flyway" version "10.10.0"
+}
+
+group = 'algorational.flyway'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.flywaydb:flyway-core'
+	implementation "org.flywaydb:flyway-mysql"
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// This provides the credentials for ./gradlew flyway* tasks like flywayMigrate, etc..
+flyway {
+	url = 'jdbc:mysql://127.0.0.1:3306/migrations'
+	user = 'username'
+	password = 'password'
+	cleanDisabled = false // better to be true as it might have catastrophic outcomes
+}
